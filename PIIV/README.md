@@ -62,3 +62,31 @@ address,pc
 128,104
 64,100
 ```
+
+## 6 Explicação Trace type:
+- Random
+
+Representa acessos sem localidade clara.
+É útil para teste básico, mas geralmente não é o mais realista.
+
+- Streaming
+
+Representa leitura sequencial de um grande vetor ou bloco de memória.
+Isso é muito comum em programas numéricos, processamento de arrays e leitura contínua de dados.
+
+- Hotset
+
+Representa um pequeno conjunto de endereços que é acessado repetidamente.
+Isso simula dados “quentes”, muito reutilizados.
+
+- Mixed
+
+Mistura streaming com hotset.
+Esse tipo é muito útil porque simula situações em que parte da memória é percorrida continuamente, mas alguns dados específicos continuam sendo reutilizados.
+
+- Matrix
+
+Representa acesso a estruturas bidimensionais, como matrizes.
+Isso também é muito comum em computação científica e benchmarks clássicos.
+
+Então esses padrões não são “oficiais” como um pacote universal obrigatório, mas são padrões sintéticos clássicos e coerentes para estudar cache.
