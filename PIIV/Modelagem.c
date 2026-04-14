@@ -3,10 +3,10 @@
 #include <time.h>
 
 #define TAM_BLOCO 32
-#define NUM_CONJUNTOS 8
+#define NUM_CONJUNTOS 32
 #define ASSOC 2
 #define NUM_ACESSOS 50
-#define MAX_ENDERECO (TAM_BLOCO * NUM_CONJUNTOS * 8)
+#define MAX_ENDERECO 32768 // 16x o tamanho total da cache (32 conjuntos x 2 vias x 32 bytes por bloco)
 #define HISTORICO_MAX 10
 #define POLITICA_LRU 0
 #define POLITICA_MOCKINGJAAY 1
