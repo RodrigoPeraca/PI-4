@@ -1,6 +1,15 @@
 # Simulador de Cache - Sprint 1
 
 Este material foi preparado para a fase de modelagem da Sprint 1.
+### IMPORTANTE: COMO RODAR O PROJETO ?
+
+--> Projeto Python
+### Ler o README que está dentro da pasta do cache_simulator
+
+--> Projeto C
+### gcc modelagem.c -o exec
+e depois:
+### .\exec  ou, em alguns casos: exec.exe
 
 ## O que o código faz
 - Simula uma cache parametrizável

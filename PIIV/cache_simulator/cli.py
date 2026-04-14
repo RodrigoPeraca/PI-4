@@ -145,11 +145,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Política de substituição: lru ou mockingjay_lite.",
     )
     parser.add_argument(
-        "--compare",
-        action="store_true",
-        help="Executa comparação entre LRU e Mockingjay Lite.",
-    )
-    parser.add_argument(
         "--trace-csv",
         type=str,
         default=None,
@@ -169,31 +164,22 @@ def resolve_trace_path(trace_csv_arg: str | None) -> Path:
 
 def main() -> None:
     args = build_parser().parse_args()
+    
+    while True:
+        trace_path = resolve_trace_path(args.trace_csv)
+        print(trace_path)
+        
+        if not trace_path.exists():
+            raise FileNotFoundError(f"Trace não encontrado: {trace_path}")
 
-    trace_path = resolve_trace_path(args.trace_csv)
-
-    if not trace_path.exists():
-        raise FileNotFoundError(f"Trace não encontrado: {trace_path}")
-
-    if args.compare:
         results = compare_policies(
             cache_size=args.cache_size,
             block_size=args.block_size,
             associativity=args.associativity,
             trace_path=trace_path,
         )
-    else:
-        results = [
-            run_single(
-                cache_size=args.cache_size,
-                block_size=args.block_size,
-                associativity=args.associativity,
-                policy_name=args.policy,
-                trace_path=trace_path,
-            )
-        ]
 
-    print_results(results)
+        print_results(results)
 
 
 if __name__ == "__main__":
