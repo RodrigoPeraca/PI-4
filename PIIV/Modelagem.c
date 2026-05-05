@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+#include <dirent.h> 
 
 #define TAM_BLOCO 32
 #define NUM_CONJUNTOS_L1 16
@@ -11,7 +12,6 @@
 #define ASSOC_L2 4
 #define DEFAULT_NUM_ACESSOS 9000
 #define MAX_ACESSOS 10000
-#define MAX_ENDERECO 131072 // suficiente para suportar traces maiores
 #define NUM_CONJUNTOS 32
 #define ASSOC 2
 #define NUM_ACESSOS 50
@@ -23,6 +23,11 @@
 
 #define MAX_CONJUNTOS 128
 #define MAX_ASSOC 4
+
+
+#define PASTA_TRACES "./cache_simulator/traces/generators"
+#define MAX_TRACES 32
+
 
 typedef struct {
     int valido;
@@ -56,6 +61,49 @@ void inicializar_cache(Cache *cache, int num_conjuntos, int associatividade) {
             cache->conjuntos[i].blocos[j].num_historico = 0;
         }
     }
+}
+ // adicione no topo junto com os outros includes
+
+
+int listar_e_escolher_trace(char caminho_escolhido[], int tamanho_buffer) {
+    DIR *dir = opendir(PASTA_TRACES);
+    if (!dir) {
+        return 0; // pasta não encontrada, segue para modo aleatório
+    }
+
+    struct dirent *entrada;
+    char arquivos[MAX_TRACES][256];
+    int total = 0;
+
+    printf("Traces disponiveis:\n");
+    while ((entrada = readdir(dir)) != NULL && total < MAX_TRACES) {
+        // filtra apenas arquivos .csv
+        char *ext = strrchr(entrada->d_name, '.');
+        if (ext && strcmp(ext, ".csv") == 0) {
+            strcpy(arquivos[total], entrada->d_name);
+            printf("  [%d] %s\n", total + 1, entrada->d_name);
+            total++;
+        }
+    }
+    closedir(dir);
+
+    if (total == 0) {
+        printf("Nenhum trace encontrado em %s\n", PASTA_TRACES);
+        return 0;
+    }
+
+    printf("  [0] Gerar acessos aleatórios\n");
+    printf("Escolha: ");
+
+    int escolha;
+    scanf("%d", &escolha);
+
+    if (escolha < 1 || escolha > total) {
+        return 0; // qualquer coisa fora do range → aleatório
+    }
+
+    snprintf(caminho_escolhido, tamanho_buffer, "%s/%s", PASTA_TRACES, arquivos[escolha - 1]);
+    return 1;
 }
 
 void atualizar_lru(Conjunto *c, int associatividade, int acessado) {
@@ -217,6 +265,8 @@ int acessar_cache(Cache *cache, int endereco, int politica, int tempo_global) {
     c->blocos[vitima].valido = 1;
     c->blocos[vitima].tag = tag;
     c->blocos[vitima].ultimo_acesso = tempo_global;
+    c->blocos[vitima].num_historico = 0;
+    c->blocos[vitima].lru = 0;
 
     if (politica == POLITICA_LRU) {
         atualizar_lru(c, cache->associatividade, vitima);
@@ -258,7 +308,8 @@ void preencher_cache(Cache *cache, int endereco, int politica, int tempo_global)
     c->blocos[vitima].valido = 1;
     c->blocos[vitima].tag = tag;
     c->blocos[vitima].ultimo_acesso = tempo_global;
-
+    c->blocos[vitima].num_historico = 0;
+    c->blocos[vitima].lru = 0;
     if (politica == POLITICA_LRU) {
         atualizar_lru(c, cache->associatividade, vitima);
     }
@@ -284,16 +335,24 @@ int main(int argc, char *argv[]) {
             return 1;
         }
     } else {
-        num_acessos = DEFAULT_NUM_ACESSOS;
-        srand((unsigned) time(NULL));
-        gerar_acessos(acessos, num_acessos);
+        char caminho_trace[512] = {0};
+            if (listar_e_escolher_trace(caminho_trace, sizeof(caminho_trace))) {
+                if (!ler_acessos_csv(caminho_trace, acessos, &num_acessos)) {
+                    fprintf(stderr, "Erro ao ler o trace: %s\n", caminho_trace);
+                    return 1;
+                }
+            } else {
+                num_acessos = DEFAULT_NUM_ACESSOS;
+                srand((unsigned) time(NULL));
+                gerar_acessos(acessos, num_acessos);
+            }
     }
 
     printf("Acessos lidos: %d\n", num_acessos);
-    for (int i = 0; i < num_acessos; i++) {
-        printf("%d ", acessos[i]);
-    }
-    printf("\n\n");
+    // for (int i = 0; i < num_acessos; i++) {
+    //     printf("%d ", acessos[i]);
+    // }
+    // printf("\n\n");
 
     int politicas[2] = { POLITICA_LRU, POLITICA_MOCKINGJAAY };
     const char *nomes_politica[2] = { "LRU", "MockingJay" };
@@ -348,8 +407,8 @@ int main(int argc, char *argv[]) {
             printf("L2 taxa de hit sobre misses L1: N/A\n\n");
         }
 
-        printf("Acessos à memória principal: %d\n", mem_accesses);
-        printf("Taxa de acesso à memória principal: %.2f%%\n\n", (100.0 * mem_accesses) / num_acessos);
+        printf("Acessos a memoria principal: %d\n", mem_accesses);
+        printf("Taxa de acesso a memoria principal: %.2f%%\n\n", (100.0 * mem_accesses) / num_acessos);
     }
 
     return 0;

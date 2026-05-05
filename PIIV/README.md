@@ -18,13 +18,9 @@ gcc Modelagem.c -o cache_simulator
 
 ### Execução
 
-- Com arquivo CSV de traços:
+ .\exec.exe
 
-```bash
-./cache_simulator caminho/para/trace.csv
-```
 
-- Sem arquivo (gera acessos aleatórios):
 
 ```bash
 ./cache_simulator
