@@ -12,6 +12,10 @@
 #define DEFAULT_NUM_ACESSOS 9000
 #define MAX_ACESSOS 10000
 #define MAX_ENDERECO 131072 // suficiente para suportar traces maiores
+#define NUM_CONJUNTOS 32
+#define ASSOC 2
+#define NUM_ACESSOS 50
+#define MAX_ENDERECO 32768 // 16x o tamanho total da cache (32 conjuntos x 2 vias x 32 bytes por bloco)
 #define HISTORICO_MAX 10
 
 #define POLITICA_LRU 0
