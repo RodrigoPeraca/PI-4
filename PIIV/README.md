@@ -1,52 +1,67 @@
 # Simulador de Cache - Sprint 1
 
 Este material foi preparado para a fase de modelagem da Sprint 1.
+
 ### IMPORTANTE: COMO RODAR O PROJETO ?
 
 --> Projeto Python
+
 ### Ler o README que está dentro da pasta do cache_simulator
 
 --> Projeto C
+
 ### Compilação
+
 ```bash
 gcc Modelagem.c -o cache_simulator
 ```
 
 ### Execução
+
 - Com arquivo CSV de traços:
+
 ```bash
 ./cache_simulator caminho/para/trace.csv
 ```
+
 - Sem arquivo (gera acessos aleatórios):
+
 ```bash
 ./cache_simulator
 ```
 
 ## O que o código Modelagem.c faz
+
 O arquivo `Modelagem.c` implementa um simulador de cache hierárquica em C, simulando caches L1 e L2 com duas políticas de substituição: LRU e MockingJay.
 
 ### Estruturas de Dados
+
 - **Bloco**: Contém validade, tag, contador LRU, último acesso e histórico de intervalos (para MockingJay).
 - **Conjunto**: Grupo de blocos com associatividade definida.
 - **Cache**: Estrutura com conjuntos, número de conjuntos e associatividade.
 
 ### Políticas de Substituição
+
 1. **LRU (Least Recently Used)**: Substitui o bloco menos recentemente usado, atualizando contadores a cada acesso.
 2. **MockingJay**: Baseada em predição de reúso, mantém histórico de intervalos entre acessos para estimar reutilização futura.
 
 ### Hierarquia de Cache
+
 - **L1**: 16 conjuntos, associatividade 2.
 - **L2**: 64 conjuntos, associatividade 4.
 - Simula inclusividade: Misses em L1 verificam L2, preenchendo ambas quando necessário.
 
 ### Entrada de Dados
+
 - Lê acessos de um arquivo CSV (endereços decimais, um por linha ou separados por vírgula).
 - Gera 9000 acessos aleatórios se nenhum arquivo for fornecido.
 
 ### Saída
+
 Imprime estatísticas para cada política: hits/misses L1 e L2, taxas de hit e acessos à memória principal.
 
 ### Exemplo de Saída
+
 ```
 ========== RESULTADO LRU =========
 Total de acessos: 9000
@@ -63,6 +78,7 @@ Taxa de acesso à memória principal: 27.78%
 ```
 
 ### Constantes Principais
+
 - TAM_BLOCO: 32 bytes
 - NUM_CONJUNTOS_L1: 16
 - ASSOC_L1: 2
@@ -73,6 +89,7 @@ Taxa de acesso à memória principal: 27.78%
 Este simulador é útil para analisar desempenho de caches e comparar políticas de substituição.
 
 ## O que o código faz
+
 - Simula uma cache parametrizável
 - Permite testar as políticas `LRU` e `Mockingjay Lite`
 - Permite gerar traços automáticos
@@ -80,9 +97,11 @@ Este simulador é útil para analisar desempenho de caches e comparar políticas
 - Compara as duas políticas usando exatamente o mesmo traço
 
 ## Observação importante
+
 A implementação `Mockingjay Lite` é uma versão simplificada inspirada no algoritmo Mockingjay. Ela é adequada para a Sprint 1 como modelagem inicial, mas não representa uma implementação fiel do paper original.
 
 ## Parâmetros principais
+
 - `--cache-size`: capacidade da cache em bytes
 - `--block-size`: tamanho do bloco em bytes
 - `--associativity`: associatividade
@@ -96,35 +115,42 @@ A implementação `Mockingjay Lite` é uma versão simplificada inspirada no alg
 ## Exemplos de uso
 
 ### 1. Rodar apenas LRU
+
 ```bash
 python simulator_cache.py --policy lru --trace-type mixed --num-accesses 200
 ```
 
 ### 2. Comparar LRU e Mockingjay Lite
+
 ```bash
 python simulator_cache.py --compare --trace-type mixed --num-accesses 200
 ```
 
 ### 3. Testar uma cache diferente
+
 ```bash
 python simulator_cache.py --compare --cache-size 8192 --block-size 32 --associativity 4 --trace-type hotset --num-accesses 500
 ```
 
 ### 4. Ler traço de CSV
+
 ```bash
 python simulator_cache.py --compare --trace-csv trace_exemplo.csv
 ```
 
 ### 5. Gerar e salvar um traço
+
 ```bash
 python simulator_cache.py --trace-type streaming --num-accesses 100 --save-trace trace_streaming.csv
 ```
 
 ## Formato do CSV
+
 O CSV deve conter pelo menos a coluna `address`.
 Pode conter também a coluna `pc`.
 
 Exemplo:
+
 ```csv
 address,pc
 64,100
@@ -134,6 +160,7 @@ address,pc
 ```
 
 ## 6 Explicação Trace type:
+
 - Random
 
 Representa acessos sem localidade clara.
