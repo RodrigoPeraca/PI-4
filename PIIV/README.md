@@ -7,9 +7,70 @@ Este material foi preparado para a fase de modelagem da Sprint 1.
 ### Ler o README que está dentro da pasta do cache_simulator
 
 --> Projeto C
-### gcc modelagem.c -o exec
-e depois:
-### .\exec  ou, em alguns casos: exec.exe
+### Compilação
+```bash
+gcc Modelagem.c -o cache_simulator
+```
+
+### Execução
+- Com arquivo CSV de traços:
+```bash
+./cache_simulator caminho/para/trace.csv
+```
+- Sem arquivo (gera acessos aleatórios):
+```bash
+./cache_simulator
+```
+
+## O que o código Modelagem.c faz
+O arquivo `Modelagem.c` implementa um simulador de cache hierárquica em C, simulando caches L1 e L2 com duas políticas de substituição: LRU e MockingJay.
+
+### Estruturas de Dados
+- **Bloco**: Contém validade, tag, contador LRU, último acesso e histórico de intervalos (para MockingJay).
+- **Conjunto**: Grupo de blocos com associatividade definida.
+- **Cache**: Estrutura com conjuntos, número de conjuntos e associatividade.
+
+### Políticas de Substituição
+1. **LRU (Least Recently Used)**: Substitui o bloco menos recentemente usado, atualizando contadores a cada acesso.
+2. **MockingJay**: Baseada em predição de reúso, mantém histórico de intervalos entre acessos para estimar reutilização futura.
+
+### Hierarquia de Cache
+- **L1**: 16 conjuntos, associatividade 2.
+- **L2**: 64 conjuntos, associatividade 4.
+- Simula inclusividade: Misses em L1 verificam L2, preenchendo ambas quando necessário.
+
+### Entrada de Dados
+- Lê acessos de um arquivo CSV (endereços decimais, um por linha ou separados por vírgula).
+- Gera 9000 acessos aleatórios se nenhum arquivo for fornecido.
+
+### Saída
+Imprime estatísticas para cada política: hits/misses L1 e L2, taxas de hit e acessos à memória principal.
+
+### Exemplo de Saída
+```
+========== RESULTADO LRU =========
+Total de acessos: 9000
+L1 hits: 4500
+L1 misses: 4500
+L1 taxa de hit: 50.00%
+
+L2 hits: 2000
+L2 misses: 2500
+L2 taxa de hit sobre misses L1: 44.44%
+
+Acessos à memória principal: 2500
+Taxa de acesso à memória principal: 27.78%
+```
+
+### Constantes Principais
+- TAM_BLOCO: 32 bytes
+- NUM_CONJUNTOS_L1: 16
+- ASSOC_L1: 2
+- NUM_CONJUNTOS_L2: 64
+- ASSOC_L2: 4
+- DEFAULT_NUM_ACESSOS: 9000
+
+Este simulador é útil para analisar desempenho de caches e comparar políticas de substituição.
 
 ## O que o código faz
 - Simula uma cache parametrizável
